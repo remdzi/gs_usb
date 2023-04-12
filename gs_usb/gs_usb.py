@@ -33,6 +33,8 @@ _GS_USB_BREQ_MODE = 2
 _GS_USB_BREQ_BERR = 3
 _GS_USB_BREQ_BT_CONST = 4
 _GS_USB_BREQ_DEVICE_CONFIG = 5
+_GS_USB_BREQ_DATA_BITTIMING = 10
+
 
 
 class GsUsb:
@@ -59,7 +61,7 @@ class GsUsb:
         flags &= self.device_capability.feature
 
         # Only allow features that this driver supports
-        flags &= GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK | GS_CAN_MODE_ONE_SHOT | GS_CAN_MODE_HW_TIMESTAMP
+        flags &= GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK | GS_CAN_MODE_ONE_SHOT | GS_CAN_MODE_HW_TIMESTAMP | GS_CAN_MODE_FD
         self.device_flags = flags
 
         mode = DeviceMode(GS_CAN_MODE_START, flags)
@@ -149,6 +151,10 @@ class GsUsb:
         """
         bit_timing = DeviceBitTiming(prop_seg, phase_seg1, phase_seg2, sjw, brp)
         self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_BITTIMING, 0, 0, bit_timing.pack())
+
+    def set_data_timing(self, prop_seg, phase_seg1, phase_seg2, sjw, brp):
+        data_bit_timing = DeviceBitTiming(prop_seg, phase_seg1, phase_seg2, sjw, brp)
+        self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_DATA_BITTIMING, 0, 0, data_bit_timing.pack())
 
     def send(self, frame):
         r"""
