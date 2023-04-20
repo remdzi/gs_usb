@@ -140,21 +140,21 @@ class GsUsb:
             #device clk or sample point currently unsupported
             return False
 
-    def set_timing(self, prop_seg, phase_seg1, phase_seg2, sjw, brp):
+    def set_timing(self, prop_seg, phase_seg1, phase_seg2, sjw, brp, data=False):
         r"""
-        Set CAN bit timing
+        Set CAN (data) bit timing
         :param prop_seg: propagation Segment (const 1)
         :param phase_seg1: phase segment 1 (1~15)
         :param phase_seg2: phase segment 2 (1~8)
         :param sjw: synchronization segment (1~4)
         :param brp: prescaler for quantum where base_clk = 48MHz (1~1024)
+        :param data: data timing or not
         """
         bit_timing = DeviceBitTiming(prop_seg, phase_seg1, phase_seg2, sjw, brp)
-        self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_BITTIMING, 0, 0, bit_timing.pack())
-
-    def set_data_timing(self, prop_seg, phase_seg1, phase_seg2, sjw, brp):
-        data_bit_timing = DeviceBitTiming(prop_seg, phase_seg1, phase_seg2, sjw, brp)
-        self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_DATA_BITTIMING, 0, 0, data_bit_timing.pack())
+        if data:
+            self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_DATA_BITTIMING, 0, 0, bit_timing.pack())
+        else:
+            self.gs_usb.ctrl_transfer(0x41, _GS_USB_BREQ_BITTIMING, 0, 0, bit_timing.pack())
 
     def send(self, frame):
         r"""
@@ -174,14 +174,23 @@ class GsUsb:
                            Note that timeout as 0 will block forever if no message is received
         :return: return True if success else False
         """
-        #Frame size is different depending on HW timestamp feature support
+        #Frame size is different depending on HW timestamp and FD feature support
         hw_timestamps = ((self.device_flags & GS_CAN_MODE_HW_TIMESTAMP) == GS_CAN_MODE_HW_TIMESTAMP)
+        fd = ((self.device_flags & GS_CAN_MODE_FD) == GS_CAN_MODE_FD)
+
+        expected_size = frame.__sizeof__(hw_timestamps, fd)
+
         try:
-            data = self.gs_usb.read(0x81, frame.__sizeof__(hw_timestamps), timeout_ms)
+            data = self.gs_usb.read(0x81, expected_size, timeout_ms)
         except usb.core.USBError:
             return False
 
-        GsUsbFrame.unpack_into(frame, data, hw_timestamps)
+        if len(data) != expected_size:
+            # If FD is enabled, a CAN frame is split into 2 USB packets, if the first one is missed,
+            # the second one will be too short to unpack
+            return False
+
+        GsUsbFrame.unpack_into(frame, data, hw_timestamps, fd)
         return True
 
     @property

@@ -7,6 +7,9 @@ GS_USB_NONE_ECHO_ID = 0xFFFFFFFF
 
 GS_USB_FRAME_SIZE = 20
 GS_USB_FRAME_SIZE_HW_TIMESTAMP = 24
+GS_USB_FRAME_SIZE_FD = 76
+GS_USB_FRAME_SIZE_FD_HW_TIMESTAMP = 80
+
 
 GS_CAN_FLAG_OVERFLOW = 1 << 0
 GS_CAN_FLAG_FD = 1 << 1
@@ -52,11 +55,17 @@ class GsUsbFrame:
     def timestamp(self):
         return self.timestamp_us / 1000000.0
 
-    def __sizeof__(self, hw_timestamp):
+    def __sizeof__(self, hw_timestamp, fd):
         if (hw_timestamp == True):
-            return GS_USB_FRAME_SIZE_HW_TIMESTAMP
+            if(fd == True):
+                return GS_USB_FRAME_SIZE_FD_HW_TIMESTAMP
+            else:
+                return GS_USB_FRAME_SIZE_HW_TIMESTAMP
         else:
-            return GS_USB_FRAME_SIZE
+            if(fd == True):
+                return GS_USB_FRAME_SIZE_FD
+            else:
+                return GS_USB_FRAME_SIZE
 
     def __str__(self) -> str:
         data = (
@@ -114,9 +123,9 @@ class GsUsbFrame:
                 )
 
     @staticmethod
-    def unpack_into(frame, data: bytes, hw_timestamp):
+    def unpack_into(frame, data: bytes, hw_timestamp, fd):
         if (hw_timestamp == True):
-            if (self.flags & GS_CAN_FLAG_FD):
+            if (fd == True):
                 (
                     frame.echo_id, frame.can_id, frame.can_dlc, frame.channel,
                     frame.flags, frame.reserved, *frame.data, frame.timestamp_us
@@ -127,7 +136,7 @@ class GsUsbFrame:
                     frame.flags, frame.reserved, *frame.data, frame.timestamp_us
                 ) = unpack("<2I4B8BI", data)
         else:
-            if (self.flags & GS_CAN_FLAG_FD):
+            if (fd == True):
                 (
                     frame.echo_id, frame.can_id, frame.can_dlc, frame.channel,
                     frame.flags, frame.reserved, *frame.data
