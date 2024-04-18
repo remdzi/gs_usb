@@ -48,8 +48,6 @@ class GsUsb:
         Start gs_usb device
         :param flags: GS_CAN_MODE_LISTEN_ONLY, GS_CAN_MODE_HW_TIMESTAMP, etc.
         """
-        # Reset to support restart multiple times
-        self.gs_usb.reset()
 
         # Detach usb from kernel driver in Linux/Unix system to perform IO
         if "windows" not in platform.system().lower() and self.gs_usb.is_kernel_driver_active(
@@ -109,6 +107,32 @@ class GsUsb:
                 self.set_timing(prop_seg, 11, 2, sjw, 4)
             elif bitrate == 1000000:
                 self.set_timing(prop_seg, 12, 2, sjw, 3)
+            else:
+                return False
+            return True
+        elif ((self.device_capability.fclk_can == 64000000) and (sample_point == 87.5)):
+            if bitrate == 10000:
+                self.set_timing(prop_seg, 12, 2, sjw, 400)
+            elif bitrate == 20000:
+                self.set_timing(prop_seg, 12, 2, sjw, 200)
+            elif bitrate == 33333:
+                self.set_timing(prop_seg, 12, 2, sjw, 120)
+            elif bitrate == 50000:
+                self.set_timing(prop_seg, 12, 2, sjw, 80)
+            elif bitrate == 83333:
+                self.set_timing(prop_seg, 12, 2, sjw, 48)
+            elif bitrate == 100000:
+                self.set_timing(prop_seg, 12, 2, sjw, 40)
+            elif bitrate == 125000:
+                self.set_timing(prop_seg, 12, 2, sjw, 32)
+            elif bitrate == 250000:
+                self.set_timing(prop_seg, 12, 2, sjw, 16)
+            elif bitrate == 500000:
+                self.set_timing(prop_seg, 12, 2, sjw, 8)
+            elif bitrate == 800000:
+                self.set_timing(prop_seg, 12, 2, sjw, 5)
+            elif bitrate == 1000000:
+                self.set_timing(prop_seg, 12, 2, sjw, 4)
             else:
                 return False
             return True
