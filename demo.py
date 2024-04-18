@@ -1,5 +1,6 @@
 import time
 
+from gs_usb import gs_usb
 from gs_usb.gs_usb import GsUsb
 from gs_usb.gs_usb_frame import GsUsbFrame
 from gs_usb.constants import (
@@ -18,15 +19,22 @@ def main():
     dev = devs[0]
 
     # Configuration
-    if not dev.set_bitrate(250000):
+    if not dev.set_bitrate(500000):
         print("Can not set bitrate for gs_usb")
         return
 
+    dev.set_data_timing(1, 16, 6, 1, 1)
+
     # Start device
-    dev.start()
+    dev.start(gs_usb.GS_CAN_MODE_FD)
 
     # Prepare frames
     data = b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0"
+    dataFD = b"\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF"
+    sfd_frame1 = GsUsbFrame(can_id=0x7FF, is_fd=True, data=data)
+    sfd_frame2 = GsUsbFrame(can_id=0x7FF, is_fd=True, data=dataFD)
+    brs_frame1 = GsUsbFrame(can_id=0x7FF, is_fd=True, brs=True, data=data)
+    brs_frame2 = GsUsbFrame(can_id=0x7FF, is_fd=True, brs=True, data=dataFD)
     sff_frame = GsUsbFrame(can_id=0x7FF, data=data)
     sff_frame2 = GsUsbFrame(can_id=0x270, data=[0x00, 0x02, 0x4f, 0x55])
     sff_frame3 = GsUsbFrame(can_id=0x350, data=[0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa])
@@ -38,6 +46,10 @@ def main():
     rtr_with_eid_frame = GsUsbFrame(can_id=0x12345678 | CAN_RTR_FLAG | CAN_EFF_FLAG)
     rtr_with_data_frame = GsUsbFrame(can_id=0x7FF | CAN_RTR_FLAG, data=data)
     frames = [
+        sfd_frame1,
+        sfd_frame2,
+        brs_frame1,
+        brs_frame2,
         sff_frame,
         sff_frame2,
         sff_frame3,
@@ -52,6 +64,7 @@ def main():
 
     # Read all the time and send message in each second
     end_time, n = time.time() + 1, -1
+    count = 1
     while True:
         iframe = GsUsbFrame()
         if dev.read(iframe, 1):
@@ -63,7 +76,11 @@ def main():
             n %= len(frames)
 
             if dev.send(frames[n]):
-                print("TX  {}".format(frames[n]))
+                print(count, "TX  {}".format(frames[n]))
+                if count == len(frames):
+                    count = 1
+                else:
+                    count += 1
 
 
 if __name__ == "__main__":
