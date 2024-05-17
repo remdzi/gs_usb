@@ -76,7 +76,7 @@ class GsUsb:
             pass
 
 
-    def set_bitrate(self, bitrate, sample_point=87.5):
+    def set_bitrate(self, bitrate, sample_point=87.5, data=False):
         r"""
         Set bitrate with sample point 87.5% and clock rate 48MHz.
         Ported from https://github.com/HubertD/cangaroo/blob/b4a9d6d8db7fe649444d835a76dbae5f7d82c12f/src/driver/CandleApiDriver/CandleApiInterface.cpp#L17-L112
@@ -88,75 +88,75 @@ class GsUsb:
 
         if ((self.device_capability.fclk_can == 48000000) and (sample_point == 87.5)):
             if bitrate == 10000:
-                self.set_timing(prop_seg, 12, 2, sjw, 300)
+                self.set_timing(prop_seg, 12, 2, sjw, 300, data)
             elif bitrate == 20000:
-                self.set_timing(prop_seg, 12, 2, sjw, 150)
+                self.set_timing(prop_seg, 12, 2, sjw, 150, data)
             elif bitrate == 50000:
-                self.set_timing(prop_seg, 12, 2, sjw, 60)
+                self.set_timing(prop_seg, 12, 2, sjw, 60, data)
             elif bitrate == 83333:
-                self.set_timing(prop_seg, 12, 2, sjw, 36)
+                self.set_timing(prop_seg, 12, 2, sjw, 36, data)
             elif bitrate == 100000:
-                self.set_timing(prop_seg, 12, 2, sjw, 30)
+                self.set_timing(prop_seg, 12, 2, sjw, 30, data)
             elif bitrate == 125000:
-                self.set_timing(prop_seg, 12, 2, sjw, 24)
+                self.set_timing(prop_seg, 12, 2, sjw, 24, data)
             elif bitrate == 250000:
-                self.set_timing(prop_seg, 12, 2, sjw, 12)
+                self.set_timing(prop_seg, 12, 2, sjw, 12, data)
             elif bitrate == 500000:
-                self.set_timing(prop_seg, 12, 2, sjw, 6)
+                self.set_timing(prop_seg, 12, 2, sjw, 6, data)
             elif bitrate == 800000:
-                self.set_timing(prop_seg, 11, 2, sjw, 4)
+                self.set_timing(prop_seg, 11, 2, sjw, 4, data)
             elif bitrate == 1000000:
-                self.set_timing(prop_seg, 12, 2, sjw, 3)
+                self.set_timing(prop_seg, 12, 2, sjw, 3, data)
             else:
                 return False
             return True
         elif ((self.device_capability.fclk_can == 64000000) and (sample_point == 87.5)):
             if bitrate == 10000:
-                self.set_timing(prop_seg, 12, 2, sjw, 400)
+                self.set_timing(prop_seg, 12, 2, sjw, 400, data)
             elif bitrate == 20000:
-                self.set_timing(prop_seg, 12, 2, sjw, 200)
+                self.set_timing(prop_seg, 12, 2, sjw, 200, data)
             elif bitrate == 33333:
-                self.set_timing(prop_seg, 12, 2, sjw, 120)
+                self.set_timing(prop_seg, 12, 2, sjw, 120, data)
             elif bitrate == 50000:
-                self.set_timing(prop_seg, 12, 2, sjw, 80)
+                self.set_timing(prop_seg, 12, 2, sjw, 80, data)
             elif bitrate == 83333:
-                self.set_timing(prop_seg, 12, 2, sjw, 48)
+                self.set_timing(prop_seg, 12, 2, sjw, 48, data)
             elif bitrate == 100000:
-                self.set_timing(prop_seg, 12, 2, sjw, 40)
+                self.set_timing(prop_seg, 12, 2, sjw, 40, data)
             elif bitrate == 125000:
-                self.set_timing(prop_seg, 12, 2, sjw, 32)
+                self.set_timing(prop_seg, 12, 2, sjw, 32, data)
             elif bitrate == 250000:
-                self.set_timing(prop_seg, 12, 2, sjw, 16)
+                self.set_timing(prop_seg, 12, 2, sjw, 16, data)
             elif bitrate == 500000:
-                self.set_timing(prop_seg, 12, 2, sjw, 8)
+                self.set_timing(prop_seg, 12, 2, sjw, 8, data)
             elif bitrate == 800000:
-                self.set_timing(prop_seg, 12, 2, sjw, 5)
+                self.set_timing(prop_seg, 12, 2, sjw, 5, data)
             elif bitrate == 1000000:
-                self.set_timing(prop_seg, 12, 2, sjw, 4)
+                self.set_timing(prop_seg, 12, 2, sjw, 4, data)
             else:
                 return False
             return True
         elif ((self.device_capability.fclk_can == 80000000) and (sample_point == 87.5)):
             if bitrate == 10000:
-                self.set_timing(prop_seg, 12, 2, sjw, 500)
+                self.set_timing(prop_seg, 12, 2, sjw, 500, data)
             elif bitrate == 20000:
-                self.set_timing(prop_seg, 12, 2, sjw, 250)
+                self.set_timing(prop_seg, 12, 2, sjw, 250, data)
             elif bitrate == 50000:
-                self.set_timing(prop_seg, 12, 2, sjw, 100)
+                self.set_timing(prop_seg, 12, 2, sjw, 100, data)
             elif bitrate == 83333:
-                self.set_timing(prop_seg, 12, 2, sjw, 60)
+                self.set_timing(prop_seg, 12, 2, sjw, 60, data)
             elif bitrate == 100000:
-                self.set_timing(prop_seg, 12, 2, sjw, 50)
+                self.set_timing(prop_seg, 12, 2, sjw, 50, data)
             elif bitrate == 125000:
-                self.set_timing(prop_seg, 12, 2, sjw, 40)
+                self.set_timing(prop_seg, 12, 2, sjw, 40, data)
             elif bitrate == 250000:
-                self.set_timing(prop_seg, 12, 2, sjw, 20)
+                self.set_timing(prop_seg, 12, 2, sjw, 20, data)
             elif bitrate == 500000:
-              self.set_timing(prop_seg, 12, 2, sjw, 10)
+              self.set_timing(prop_seg, 12, 2, sjw, 10, data)
             elif bitrate == 800000:
-                self.set_timing(prop_seg, 7, 1, sjw, 10)
+                self.set_timing(prop_seg, 7, 1, sjw, 10, data)
             elif bitrate == 1000000:
-                self.set_timing(prop_seg, 12, 2, sjw, 5)
+                self.set_timing(prop_seg, 12, 2, sjw, 5, data)
             else:
                 return False
             return True
