@@ -30,3 +30,9 @@ CAN_MAX_DLEN = 64
 
 # CAN ID length
 CAN_IDLEN = 4
+
+# GS_CAN frame flags
+GS_CAN_FLAG_OVERFLOW = 1 << 0
+GS_CAN_FLAG_FD = 1 << 1
+GS_CAN_FLAG_BRS = 1 << 2
+GS_CAN_FLAG_ESI = 1 << 3

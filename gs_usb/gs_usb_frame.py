@@ -1,4 +1,5 @@
 from .constants import CAN_EFF_FLAG, CAN_RTR_FLAG, CAN_ERR_FLAG, CAN_EFF_MASK
+from .constants import GS_CAN_FLAG_FD, GS_CAN_FLAG_BRS, GS_CAN_FLAG_ESI
 from struct import *
 
 # gs_usb general
@@ -10,11 +11,6 @@ GS_USB_FRAME_SIZE_HW_TIMESTAMP = 24
 GS_USB_FRAME_SIZE_FD = 76
 GS_USB_FRAME_SIZE_FD_HW_TIMESTAMP = 80
 
-
-GS_CAN_FLAG_OVERFLOW = 1 << 0
-GS_CAN_FLAG_FD = 1 << 1
-GS_CAN_FLAG_BRS = 1 << 2
-GS_CAN_FLAG_ESI = 1 << 3
 
 class GsUsbFrame:
     def __init__(self, can_id=0, is_fd=False, brs=False, esi=False, data=[]):
