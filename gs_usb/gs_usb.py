@@ -204,17 +204,24 @@ class GsUsb:
 
         expected_size = frame.__sizeof__(hw_timestamps, fd)
 
-        try:
-            data = self.gs_usb.read(0x81, expected_size, timeout_ms)
-        except usb.core.USBError:
-            return False
+        while True:
+            try:
+                data = self.gs_usb.read(0x81, expected_size, timeout_ms)
+            except usb.core.USBError:
+                return False
 
-        if len(data) != expected_size:
-            # If FD is enabled, a CAN frame is split into 2 USB packets, if the first one is missed,
-            # the second one will be too short to unpack
-            return False
+            if len(data) != expected_size:
+                # If FD is enabled, a CAN frame is split into 2 USB packets, if the first one is missed,
+                # the second one will be too short to unpack
+                return False
 
-        GsUsbFrame.unpack_into(frame, data, hw_timestamps, fd)
+            GsUsbFrame.unpack_into(frame, data, hw_timestamps, fd)
+
+            if (frame.echo_id == GS_USB_NONE_ECHO_ID):
+                return True
+                # If echo_id != -1 it corresponds to a CAN Tx aknowledgement
+                # and we ignore it
+
         return True
 
     @property
